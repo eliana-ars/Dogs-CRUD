@@ -60,17 +60,17 @@ canvas.pack()
 image_canvas = canvas.create_image(0, 0, anchor=tk.NW, image=None)
 
 # create the select image button
-select_image_button = tk.Button(window, text="Selecione uma imagem", command=select_image, bg = "#85d3ff", font =("Helvetica 10" ))
+select_image_button = tk.Button(window, text="Selecione uma imagem", command=select_image, bg = "#FFFF00", font =("Helvetica 10" ))
 select_image_button.pack()
 select_image_button.place(relx = .50, rely = .70, anchor = "n")
 
 # create the rotate image button
-rotate_button = tk.Button(window, text="Rotacione", command=rotate_image_handler, bg = "#85d3ff", font =("Helvetica 10" ))
+rotate_button = tk.Button(window, text="Rotacione", command=rotate_image_handler, bg = "#FFFF00", font =("Helvetica 10" ))
 rotate_button.pack()
 rotate_button.place(relx = .30, rely = .70, anchor = "n")
 
 #botao de prosseguir
-btn_proximo = tk.Button(window,text="Próximo",bg="#85d3ff",command=lambda:proximo())
+btn_proximo = tk.Button(window,text="Próximo",bg="#FFFF00",command=lambda:proximo())
 btn_proximo.place(relx = .70, rely = .70, anchor = "n")
 
 def proximo():
