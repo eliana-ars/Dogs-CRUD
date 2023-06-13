@@ -5,6 +5,7 @@ from PIL import Image, ImageTk
 import subprocess
 import cv2
 import numpy as np
+from tkinter import filedialog
 
 
 animal = Tk()
@@ -83,7 +84,6 @@ def salvar():
     variavel_idade = txt_idade.get()
     variavel_especie = txt_especie.get()
 
-
     if(variavel_codigo == "" or variavel_peso == "" or variavel_data=="" or variavel_idade=="" or variavel_especie==""):
         MessageBox.showinfo("Erro","Há campos em branco")
     else:
@@ -94,6 +94,7 @@ def salvar():
         cursor.execute("commit")
         MessageBox.showinfo("Mensagem","Cadastro realizado com sucesso")
         conectar.close()
+
 
 def alterar():
     variavel_codigo = txt_codigo.get()
@@ -107,7 +108,7 @@ def alterar():
     else:
         conectar = mysql.connect(host="localhost", user="root", password="", database="cadastro")
         cursor = conectar.cursor()
-        cursor.execute("UPDATE cadastrar SET peso=%s, datas=%s, idade=%s, especie=%s WHERE código=%s",
+        cursor.execute("UPDATE cadastrar SET peso=%s, data=%s, idade=%s, especie=%s WHERE código=%s",
                        (variavel_peso, variavel_data, variavel_idade, variavel_especie, variavel_codigo))
         conectar.commit()
         MessageBox.showinfo("Mensagem", "Cadastro alterado com sucesso")
@@ -136,63 +137,17 @@ def consultar():
     for registro in registros:
         print(registro)
 
-def rotacionar_perfil():
-    fotoOriginal = Image.open("imgs/perfil.png")
-    fotoRotate = fotoOriginal.rotate(45)  # Girar a imagem em 45 graus
-    fotoResize = fotoRotate.resize((130, 130))
-    fotoPerfil = ImageTk.PhotoImage(fotoResize)
-    Perfil.configure(image=fotoPerfil)  # Atualizar a imagem exibida no Label
-    Perfil.image = fotoPerfil  # Armazenar uma referência à imagem para evitar que ela seja coletada pelo garbage collector        
-
 # buttons
 btn_salvar = Button(animal, width=15, text="Salvar", activebackground="#FFFF00", bd=0, bg="#FFFF00",compound=TOP, command=salvar).place(x=230, y=490)
 btn_alterar = Button(animal, width=15, text="Alterar", bg="#fff", bd=1,compound=TOP, command=alterar).place(x=350, y=490)
 btn_excluir = Button(animal, width=15, text="Excluir", bg="#fff", bd=1,compound=TOP, command=excluir).place(x=480, y=490)
 btn_consultar = Button(animal, width=15, text="Consultar", bg="#fff", bd=1,compound=TOP, command=consultar).place(x=610, y=490)
 
-#rotação img
-def complexo(rotacao_image, angulo):
-    altura, largura = rotacao_image.shape[0], rotacao_image.shape[1]
-    x, y = altura / 2, largura / 2
-    rotacao_matriz = cv2.getRotationMatrix2D((y, x), angulo, 1.0)
-    coseno = np.abs(rotacao_matriz[0][0])
-    seno = np.abs(rotacao_matriz[0][1])
-    nova_altura = int((altura * seno) + largura * coseno)
-    nova_largura = int((altura * coseno) + largura * seno)
 
-    rotacao_matriz[0][2] += (nova_largura / 2) - x
-    rotacao_matriz[1][2] += (nova_altura / 2) - y
-
-    rotacionando_image = cv2.warpAffine(rotacao_image, rotacao_matriz, (nova_largura, nova_altura))
-    return rotacionando_image
-
-# Carregar a imagem
-imagem_usuario = cv2.imread("usuario.png", 1)
-
-def rotacionar_perfil():
-    angulo = 45  # Defina o ângulo de rotação desejado
-    imagem_rotacionada = complexo(imagem_usuario, angulo)
-
-    # Converter a imagem para o formato suportado pelo Tkinter
-    imagem_rotacionada_tk = ImageTk.PhotoImage(Image.fromarray(cv2.cvtColor(imagem_rotacionada, cv2.COLOR_BGR2RGB)))
-
-    # Atualizar a imagem exibida no Label
-    lbl_imagem_rotacionada.configure(image=imagem_rotacionada_tk)
-    lbl_imagem_rotacionada.image = imagem_rotacionada_tk  # Armazenar uma referência à imagem para evitar que ela seja coletada pelo garbage collector
+def abrir_tela_tk():
+    subprocess.run(["python", "rotacao.py"])
+btn_imagem = Button(animal, width=15, text="Carregar Imagem", bg="#fff", bd=1,compound=TOP, command=abrir_tela_tk).place(x=110, y=300)
 
 
-btn_rotacionar = Button(animal, width=15, text="Rotacionar", bg="#fff", bd=1, compound=TOP, command=rotacionar_perfil)
-btn_rotacionar.place(x=230, y=300)
-
-# Carregar a imagem original
-imagem_original_tk = ImageTk.PhotoImage(Image.fromarray(cv2.cvtColor(imagem_usuario, cv2.COLOR_BGR2RGB)))
-
-# Exibir a imagem original em um Label
-lbl_imagem_original = Label(animal, image=imagem_original_tk)
-lbl_imagem_original.place(x=100, y=150)
-
-# Label para exibir a imagem rotacionada
-lbl_imagem_rotacionada = Label(animal)
-lbl_imagem_rotacionada.place(x=300, y=150)
 
 animal.mainloop()
